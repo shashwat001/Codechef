@@ -65,13 +65,12 @@ class Matrix
 				ret.m[iti][itj] = 0;
 				for(itk = 0;itk < 4;itk++)
 				{
-					val = this->m[iti][itk]*operand.m[itk][itj];
+					val = (this->m[iti][itk]*operand.m[itk][itj])%MOD;
+					if(val < 0)
+						val+=MOD;
 					ret.m[iti][itj] = (ret.m[iti][itj] + val)%MOD;
-				}
-				if(ret.m[iti][itj] < 0)
-				{
-					q = -ret.m[iti][itj] / MOD;
-					ret.m[iti][itj] = ret.m[iti][itj]+MOD*(q+1);
+					if(ret.m[iti][itj] < 0)
+						ret.m[iti][itj]+=MOD;
 				}
 			}
 		}
@@ -160,12 +159,9 @@ long long int getfib(long long int n)
 		n=n/1000;
 		i++;
 	}
-	temp = b.m[0][0]*96+b.m[0][1]*44+b.m[0][2]*18+b.m[0][3]*5;
+	temp = (b.m[0][0]*96+b.m[0][1]*44+b.m[0][2]*18+b.m[0][3]*5)%MOD;
 	if(temp < 0)
-	{
-		q = -temp / MOD;
-		temp = temp+MOD*(q+1);
-	}
+		temp+=MOD;
 	return temp;
 }
 int main()
@@ -189,7 +185,7 @@ int main()
 			default: sum = getfib(n);break;
 		}
 		
-		printf("%lld\n",sum%MOD);
+		printf("%lld\n",sum);
 	}
 	return 0;
 }

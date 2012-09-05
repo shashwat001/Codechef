@@ -2,6 +2,6 @@
 
 int main()
 {
-	printf("%d\n",(-3)%7);
+	printf("%d\n",(-100)%7);
 	return 0;
 }
