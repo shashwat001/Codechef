@@ -47,6 +47,7 @@ long long int readInt()
 
 #define MOD 1000000007
 #define MOD2 2000000014
+#define BASE 1050
  
 class Matrix
 {
@@ -92,7 +93,9 @@ class Matrix
 
 };
  
-Matrix store[6][1001];
+Matrix store[6][BASE+1];
+char s[180001],temps[18];
+int cs = 0,ctemps;
  
 void init()
 {
@@ -122,21 +125,21 @@ void init()
 	
 	fi(0,5)
 	{
-		fj(2,1000)
+		fj(2,BASE)
 		{
 			store[i][j]=store[i][j-1]*store[i][1];
 		}
 		store[i+1][0]=b;
-		store[i+1][1]=store[i][999]*store[i][1];
+		store[i+1][1]=store[i][BASE-1]*store[i][1];
 	}
 }
 
-long long int getfib(long long int n)
+int getfib()
 {
 	Matrix b,c;
 	int r;
 	long long int temp,q;
-	n = n-5;
+
 	for(i = 0;i < 4;i++)
 	{
 		for(j = 0;j < 4;j++)
@@ -145,47 +148,72 @@ long long int getfib(long long int n)
 			else b.m[i][j] = 0;
 		}
 	}
-	if(!n)
-	{
-		return 0;
-	}
+
 
 	i = 0;
-	while(n>0)
+	ctemps = 0;
+	while(s[cs]!='\n')
 	{
-		r = n%1000;
+		temps[ctemps++] = s[cs++];
+	}
+	cs++;
+	int n = ctemps-1;
+	if(ctemps==1)
+	{
+		switch(temps[0])
+		{
+			case '0': return 0;break;
+			case '1': return 0; break;
+			case '2': return 5; break;
+			case '3': return 18; break;
+			case '4': return 44;break;
+			case '5': return 96; break;
+		}
+	}
+	while(n>=0)
+	{
+		r = 0;
+		j = 0;
+		int k = 1;
+		while(j<3 && n >= 0)
+		{
+			r += (temps[n] - '0')*k;
+			k = k*10;
+			j++;
+			n--;
+		}
 		c=(b*store[i][r]);
 		b=c;
-		n=n/1000;
 		i++;
 	}
+
 	temp = (b.m[0][0]*96+b.m[0][1]*44+b.m[0][2]*18+b.m[0][3]*5)%MOD;
 	if(temp < 0)
 		temp+=MOD;
-	return temp;
+	return (int)temp;
 }
 int main()
 {
-	int t,r,rem,tot;
-	long long int n,itn,sum;
+	int t=0,r,rem,tot;
+	long long int n,itn;
+	int sum;
 	init();
-	t = readInt();
+	fread(s,180000,1,stdin);
+	ctemps = 0;
+	while(s[cs]!='\n')
+	{
+		t = t*10 + s[cs++] - '0';
+	}
+	cs++;
+
+	//t = readInt();
 	while(t--)
 	{
 		sum = 0;
-		n = readInt();
-		switch(n)
-		{
-			case 0: sum = 0;break;
-			case 1: sum = 1; break;
-			case 2: sum = 5; break;
-			case 3: sum = 18; break;
-			case 4: sum = 44;break;
-			case 5: sum = 96; break;
-			default: sum = getfib(n);break;
-		}
+		//n = readInt();
+		sum = getfib();
 		
-		printf("%lld\n",sum);
+		printf("%d\n",sum);
 	}
 	return 0;
 }

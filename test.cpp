@@ -2,6 +2,7 @@
 
 int main()
 {
-	printf("%d\n",(-100)%7);
-	return 0;
+	char s[170001];
+	fread(s,170000,1,stdin);
+	printf("%s\n",s);
 }
