@@ -144,7 +144,8 @@ int main()
 	long long int n,q,i,temp,qu,t,k,gc;
 	scanf("%lld",&n);
 	
-	qu = readInt();
+	//qu = readInt();
+	scanf("%lld",&qu);
 	pc = 0;
 	int sum,cnt,j,f=1;
 	temp = n;
