@@ -10,30 +10,32 @@ using namespace std;
 long long int i,j;
 
 #define BUF 4096
-char ibuf[BUF];
- 
+char ibuf[BUF]; 
 int ipt = BUF;
  
-inline int readInt() {
- 
-    while (ipt < BUF && ibuf[ipt] < '0') ipt++;
- 
-    if (ipt == BUF) {
-	fread(ibuf, 1, BUF, stdin);
- 
-	ipt = 0;
-	while (ipt < BUF && ibuf[ipt] < '0') ipt++;
- 
+int readInt() 
+{ 
+    while (ipt < BUF && ibuf[ipt] < '0') 
+    	ipt++;
+    	 
+    if (ipt == BUF) 
+    {
+		fread(ibuf, 1, BUF, stdin);	 
+		ipt = 0;
+		while (ipt < BUF && ibuf[ipt] < '0') 
+			ipt++; 
     }
+    
     int n = 0;
-    while (ipt < BUF && ibuf[ipt] >= '0') n = (n*10)+(ibuf[ipt++]-'0');
+    while (ipt < BUF && ibuf[ipt] >= '0') 
+    	n = (n*10)+(ibuf[ipt++]-'0');
  
-    if (ipt == BUF) {
-	fread(ibuf, 1, BUF, stdin);
- 
-	ipt = 0;
-	while (ipt < BUF && ibuf[ipt] >= '0') n = (n*10)+(ibuf[ipt++]-'0');
- 
+    if (ipt == BUF) 
+    {
+		fread(ibuf, 1, BUF, stdin);	 
+		ipt = 0;
+		while (ipt < BUF && ibuf[ipt] >= '0') 
+			n = (n*10)+(ibuf[ipt++]-'0'); 
     }
     return n;
 }
