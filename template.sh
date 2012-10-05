@@ -29,7 +29,6 @@ else
 	echo "#include <stack>" 					>> $file
 	echo "#include <list>" 						>> $file
 	echo "#include <algorithm>" 				>> $file
-	echo "#include <priority_queue>" 			>> $file
 	echo "" 									>> $file
 	echo "using namespace std;"					>> $file
 	echo ""										>> $file
