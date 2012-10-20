@@ -58,21 +58,58 @@ int i,j;
 
 int main()
 {
-	int t,n,val[2000];
-	float p[2001][2001];
-	p[1,1] = 1;
+	int t,n;
+	float p[2001][1001],r,s,res;
+	p[0][1] = 0.0;
+	p[0][0] = 0.0;
 	for(i = 1;i <= 2000; i++)
 	{
-		for(j = 1;j <= i;j++)
+		for(j = 1;j <= (i+1)/2;j++)
 		{
-			p[i,j] = p[i,j-1]*p[i-j+1,i-j+1];
+			if(j>i/2)
+			{
+				r = p[i-1][i-j];
+			}
+			else
+				r = p[i-1][j];
+			if((j-1)>i/2)
+			{
+				s = p[i-1][i-j+1];
+			}
+			else
+				s = p[i-1][j-1];
+			p[i][j] = 1.0 - 0.5*(r + s);
+			//p[i][i+1-j] = p[i][j];
 		}
 	}
 	t = readInt();
 	while(t--)
 	{
+		res = 0.0;
 		n = readInt();
-		
+		for(i = 1;i <= (n+1)/2;i++)
+		{
+			j = readInt();
+			//if((n&1) && (i==(n+1)/2))
+				//res = 2*p[n][i]*j;
+			//else
+				res += p[n][i]*j;
+		}
+		for(i = i;i <= n;i++)
+		{
+			j = readInt();
+			res += p[n][n+1-i]*j;
+		}
+		printf("%f\n",res);
 	}
+	
+	/*for(i = 1;i <= 10;i++)
+	{
+		for(j = 1;j <= (i+1)/2;j++)
+		{
+			printf("%f  ",p[i][j]);
+		}
+		printf("\n");
+	}*/
 	return 0;
 }

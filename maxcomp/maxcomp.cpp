@@ -92,7 +92,9 @@ int bs(int left, int right, int val)
 		return 0;
 	if(left == right)
 	{
+		if(left)
 			return sum[left-1];
+		return 0;
 	}
 	int res;
 	int mid = (left+right)>>1;
@@ -125,10 +127,15 @@ int main()
 		for(i = 1;i < n;i++)
 		{
 			res = bs(0,i,orders[i].s+1);
-			if((res + orders[i].c)>sum[i-1])
-				sum[i] = res+orders[i].c;
-			else
-				sum[i] = sum[i-1];
+			//if(res == -1)
+			//	sum[i] = (orders[i].c>sum[i-1])?orders[i].c:sum[i-1];
+			//else
+			//{
+				if((res + orders[i].c)>sum[i-1])
+					sum[i] = res+orders[i].c;
+				else
+					sum[i] = sum[i-1];
+			//}
 		}
 		printf("%lld\n",sum[n-1]);
 	}
