@@ -1,10 +1,11 @@
 #include <cstdio>
 #include <cstdlib>
-static class FastIO
+#include <cstring>
+class FastIO
 {
 	int Bufsize,oBuffersize;
 	int bufferCounter,oBufferCounter;
-	char *Buffer,*oBuffer;
+	char Buffer[65536],oBuffer[4097];
 	
 	void align()
 	{
@@ -21,21 +22,20 @@ static class FastIO
 	}
 	void FlushOBuffer()
 	{
+		oBuffer[oBuffersize] = '\0';
 		fwrite(oBuffer,1,oBuffersize,stdout);
 		oBufferCounter = 0;
 	}
 	
 	public:
 	
-	FastIO(int Bufsize = 4096,int oBuffersize = 4096)
+	FastIO(int Bufsize = 65536,int oBuffersize = 4096)
 	{
 		this->Bufsize = Bufsize;
 		bufferCounter = 0;
-		Buffer = (char *)malloc(sizeof(char)*Bufsize);
 		
 		this->oBuffersize = oBuffersize;
 		oBufferCounter = 0;
-		oBuffer = (char*)malloc(sizeof(char)*oBuffersize);
 	}
 	
 	int readInt(int &n)
@@ -52,7 +52,8 @@ static class FastIO
 			
 		if(bufferCounter == Bufsize)
 		{
-			align();
+			fread(Buffer,1,Bufsize,stdin);
+			bufferCounter = 0;
 			if(Buffer[bufferCounter] == '-')
 				negativeFlag = true,bufferCounter++;
 				
@@ -84,7 +85,8 @@ static class FastIO
 			
 		if(bufferCounter == Bufsize)
 		{
-			align();
+			fread(Buffer,1,Bufsize,stdin);
+			bufferCounter = 0;
 			if(Buffer[bufferCounter] == '-')
 				negativeFlag = true,bufferCounter++;
 				
@@ -96,7 +98,7 @@ static class FastIO
 			n = -n;
 	}
 	
-	int readString(char *c)
+	int readStr(char *c)
 	{
 		int cc = 0;
 		align();
@@ -104,7 +106,8 @@ static class FastIO
 			c[cc++] = Buffer[bufferCounter++];
 		if(bufferCounter == Bufsize)
 		{
-			align();
+			fread(Buffer,1,Bufsize,stdin);
+			bufferCounter = 0;
 			while(bufferCounter < Bufsize && Buffer[bufferCounter] >= '0')
 				c[cc++] = Buffer[bufferCounter++];
 		}
@@ -158,13 +161,57 @@ static class FastIO
 	
 	~FastIO()
 	{
-		FlushOBuffer();
-		free(Buffer);
-		free(oBuffer);
+		oBuffer[oBufferCounter] = '\0';
+		fwrite(oBuffer,1,oBufferCounter,stdout);
 	}
 };
 
+
+#define BUF 65536
+char ibuf[BUF];
+int ipt = BUF;
+
+int readInt()
+{
+	while (ipt < BUF && ibuf[ipt] < '0')
+		ipt++;
+
+	if (ipt == BUF)
+	{
+		fread(ibuf, 1, BUF, stdin);
+		ipt = 0;
+		while (ipt < BUF && ibuf[ipt] < '0')
+			ipt++;
+	}
+
+	int n = 0;
+	while (ipt < BUF && ibuf[ipt] >= '0')
+		n = (n*10)+(ibuf[ipt++]-'0');
+
+	if (ipt == BUF)
+	{
+		fread(ibuf, 1, BUF, stdin);
+		ipt = 0;
+		while (ipt < BUF && ibuf[ipt] >= '0')
+			n = (n*10)+(ibuf[ipt++]-'0');
+	}
+	return n;
+}
 int main()
 {
+	int a;
+	FastIO io;
+	char str[20];
+	int n,t,k,num = 0;
+	io.readInt(n);
+	io.readInt(k);
+	while(n--)
+	{
+		io.readInt(t);
+		if(t%k==0)
+			num++;
+	}
+	io.printInt(num);
+	
 	return 0;
 }
