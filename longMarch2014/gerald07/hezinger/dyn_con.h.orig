@@ -1,0 +1,364 @@
+// ------------ et_trees ----------------- //
+#include"rnbw_tree.h"
+// some forward definitions
+class dyn_con;
+class et_node_struct;
+typedef et_node_struct* et_node;
+typedef et_node et_tree;
+
+
+
+class et_node_struct : public rnbw_node_struct
+{
+	public:
+	et_node_struct(dyn_con * dcp,node v,int my_level = -1,int active = false);
+	et_node_struct(et_node en);
+	
+	node get_corr_node()
+	{
+		return corr_node;
+	}
+	
+	int is_active()
+	{
+		return active;
+	}
+	
+	friend et_tree et_link(node u,node v,edge e, int i, dyn_con *dc);
+	
+	friend void et_cut(edge e,int i,dyn_con *dc);
+	
+	
+	// --- Conversion Functions ---
+et_node parent() { return (et_node) rnbw_node_struct::parent(); }
+et_node left_child() { return (et_node) child [rnb_left]; }
+et_node right_child() { return (et_node) child [rnb_right]; }
+et_tree find_root() { return (et_tree) rnb_node_struct::find_root(); }
+et_node first() { return (et_node) rnb_node_struct::first(); }
+et_node last() { return (et_node) rnb_node_struct::last(); }
+et_node cyclic_succ() { return (et_node) rnb_node_struct::cyclic_succ();}
+et_node cyclic_pred() { return (et_node) rnb_node_struct::cyclic_pred();}
+friend inline et_tree et_join(et_tree t1, et_tree t2, et_node dummy)
+{ return (et_tree) rnb_join(t1,t2,dummy); }
+friend inline et_node et_locate(et_tree et, int w, int& offset)
+{ return (et_node) rnbw_locate(et,w,offset);
+}
+void pass_activity(et_node to);
+
+friend void change_root(et_tree& et, et_node en, int i, dyn_con* dc);
+
+
+	
+	protected:
+	dyn_con *dc;
+	node corr_node;
+	int level;
+	int active;
+	edge edge_occ[2];
+};
+
+
+et_node_struct::et_node_struct(dyn_con* dcp, node v, int my_level, int activate): rnbw_node_struct(0)
+{
+dc = dcp;
+corr_node = v;
+level = my_level;
+active = activate;
+if(activate) dc->Gp->inf(v)->act_occ [level] = this;
+edge_occ [0] = edge_occ [1] = NULL;
+}
+et_node_struct::et_node_struct(et_node en)
+: rnbw_node_struct(0)
+{
+dc = en->dc;
+corr_node = en->corr_node;
+level = en->level;
+active = false;
+
+edge_occ [0] = edge_occ [1] = NULL;
+}
+
+
+void et_node_struct::pass_activity(et_node to)
+
+{
+active = false;
+to->active = true;
+to->set_weight(get_weight());
+set_weight(0);
+dc->Gp->inf(corr_node)->act_occ [level] = to;
+}
+
+void change_root(et_tree& et, et_node en, int i, dyn_con* dc)
+{
+et_node first_nd = et->first();
+if(en == first_nd) return;
+// create a new occurrence for the new root
+et_node new_occ = new et_node_struct(en);
+// --- update active occurrences --- //
+et_node last_nd = et->last();
+// if the first node is active, pass activity to last node, since
+// the first node will be deleted
+if(first_nd->active) first_nd->pass_activity(last_nd);
+// --- update tree_occs --- //
+if(en->edge_occ [rnb_left] == en->edge_occ [rnb_right])
+{
+// replace the nil pointer in tree_occs of en->edge_occ rnb_left]
+// by the new occurrence
+for(int k=0; dc->Gp->inf(en->edge_occ [rnb_left])->tree_occ [i][k];k++)
+dc->Gp->inf(en->edge_occ [rnb_left])->tree_occ [i][k] = new_occ;
+}
+else
+{
+// replace en by the new occurrence
+for(int k=0 en != dc->Gp->inf(en->edge_occ rnb_left])->tree_occ i] k]
+k++)
+dc->Gp->inf(en->edge_occ rnb_left])->tree_occ i] k] = new_occ
+}
+edge first_edge = first_nd->edge_occ rnb_right]
+if((first_edge != last_nd->edge_occ rnb_left]) ||
+(en == last_nd))
+{
+// replace first_nd by last_nd in the tree_occs of first_edge
+for(int k=0 first_nd != dc->Gp->inf(first_edge)->tree_occ i] k]
+k++)
+dc->Gp->inf(first_edge)->tree_occ i] k] = last_nd
+}
+else
+{
+// replace first_nd by nil in the tree_occs of first_edge
+for(int k=0 ;first_nd != dc->Gp->inf(first_edge)->tree_occ[ i][ k];k++)
+dc->Gp->inf(first_edge)->tree_occ [i] [k] = NULL;
+}
+// --- update edge_occs --- //
+// right edge of first_nd becomes right edge of last node
+last_nd->edge_occ [rnb_right] = first_edge;
+// left edge of en becomes left edge of new_occ
+new_occ->edge_occ [rnb_left] = en->edge_occ [rnb_left];
+en->edge_occ [rnb_left] = NULL;
+// --- update the et_tree --- //
+// split off first occurrence and delete it
+et_tree s1, s2;
+split(first_nd,rnb_right,s1,s2,dc->et_dummy);
+delete first_nd;
+// split immediately before en
+split(en,rnb_left,s1,s2,dc->et_dummy);
+}
+// join the pieces
+et = et_join(s2,et_join(s1,new_occ,dc->et_dummy),dc->et_dummy);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+et_tree et_link(node u, node v, edge e, int i, dyn_con* dc)
+{
+
+et_node u_act = dc->Gp->inf(u)->act_occ [i];
+et_node v_act = dc->Gp->inf(v)->act_occ [i];
+et_node new_u_occ = new et_node_struct(u_act);
+// find the tree etv containing v_act and reroot it at v_act
+et_tree etv = v_act->find_root();
+change_root(etv,v_act,i,dc);
+// --- initialize tree_occs of e ---
+// u_act and new_u_occ become the first two tree_occs of e
+dc->Gp->inf(e)->tree_occ i] [0] = u_act;
+dc->Gp->inf(e)->tree_occ i] [1] = new_u_occ;
+// the first and the last node of etv are tree_occ i] 2 and 3] if
+// they are different otherwise tree_occ i] 2] is nil
+et_node etv_last = etv->last();
+dc->Gp->inf(e)->tree_occ [i] [3] = etv_last;
+if(etv_last != v_act) dc->Gp->inf(e)->tree_occ [i] [2] = v_act;
+else
+dc->Gp->inf(e)->tree_occ [i] [2] = NULL;
+// --- update tree_occs of the edge following e if it exists ---
+edge after_e = u_act->edge_occ [rnb_right];
+if(after_e)
+{
+if(u_act->edge_occ [rnb_left] != after_e)
+{
+// replace u_act by new_u_occ
+for(int k=0 ;u_act != dc->Gp->inf(after_e)->tree_occ [i] [k]; k++)
+dc->Gp->inf(after_e)->tree_occ [i] [k] = new_u_occ;
+}
+else
+{
+// replace nil pointer by new_u_occ
+for(int k=0 ;nil != dc->Gp->inf(after_e)->tree_occ [i] [k]; k++)
+dc->Gp->inf(after_e)->tree_occ [i] [k] = new_u_occ;
+}
+}
+// --- update edge_occs ---
+new_u_occ->edge_occ rnb_right] = u_act->edge_occ [rnb_right];
+new_u_occ->edge_occ [rnb_left] = e;
+u_act->edge_occ [rnb_right] = e;
+v_act->edge_occ [rnb_left] = e;
+etv_last->edge_occ [rnb_right] = e;
+// --- update et_trees ---
+// concatenate etv and the new occurrence
+etv = et_join(etv,new_u_occ,dc->et_dummy);
+// split the et_tree containing u_act after u_act
+et_tree s1, s2;
+split(u_act,rnb_right,s1,s2,dc->et_dummy);
+// concatenate the pieces
+}
+return et_join(s1,et_join(etv,s2,dc->et_dummy),dc->et_dummy);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+void et_cut(edge e, int i, dyn_con* dc)
+// Update the et_trees at level corresponding to the removal of
+// the tree edge e.
+// Prec.: e actually is a tree edge at level i.
+{
+// get the et_nodes representing e at level i
+et_node ea1 = dc->Gp->inf(e)->tree_occ [i] [0];
+et_node ea2 = dc->Gp->inf(e)->tree_occ [i] [1];
+et_node eb1 = dc->Gp->inf(e)->tree_occ [i] [2];
+et_node eb2 = dc->Gp->inf(e)->tree_occ [i] [3];
+// set the tree_occ to nil
+dc->Gp->inf(e)->tree_occ [i][0]=NULL;
+dc->Gp->inf(e)->tree_occ [i][0]=NULL;
+dc->Gp->inf(e)->tree_occ [i][0]=NULL;
+dc->Gp->inf(e)->tree_occ [i][0]=NULL;
+
+et_node aux;
+if(ea1 && ea2)
+{
+if(smaller(ea2,ea1))
+{
+aux = ea1; ea1 = ea2; ea2 = aux;
+}
+}
+else
+// either ea1 or ea2 is nil...
+{
+if(ea1) // ...it is ea2
+{
+ea2 = ea1 ;ea1 = NULL;
+}
+
+}
+if(eb1 && eb2)
+{
+if(smaller(eb2,eb1))
+{
+aux = eb1; eb1 = eb2; eb2 = aux;
+}
+}
+else
+// either eb1 or eb2 is nil...
+{
+if(eb1) // ...it is eb2
+{
+eb2 = eb1; eb1 = NULL;
+}
+}
+
+
+
+f(smaller(ea2,eb2))
+{
+aux = eb1; eb1 = ea1; ea1 = aux;
+aux = eb2; eb2 = ea2 ;ea2 = aux;
+}
+// --- update et_trees ---
+// compute s1, s2 and s3
+et_tree s1, s2, s3;
+split(ea1,rnb_right,s1,s2,dc->et_dummy);
+split(ea2,rnb_right,s2,s3,dc->et_dummy);
+// compute the first of the two resulting trees
+et_join(s1,s3,dc->et_dummy);
+// split off ea2 from s2 giving the second tree
+split(eb2,rnb_right,s1,s2,dc->et_dummy);
+// --- update active occurrences ---
+if(ea2->active) ea2->pass_activity(ea1);
+// --- update tree_occs ---
+// update tree_occs of the edge following e if it exists
+edge after_e = ea2->edge_occ [rnb_right];
+if(after_e)
+{
+if(ea1->edge_occ [rnb_left] != after_e)
+{
+// replace ea2 by ea1
+for(int k=0; ea2 != dc->Gp->inf(after_e)->tree_occ [i] [k];k++)
+dc->Gp->inf(after_e)->tree_occ [i] [k] = ea1;
+}
+else
+{
+// replace ea2 by nil
+for(int k=0; ea2 != dc->Gp->inf(after_e)->tree_occ [i] [k];k++)
+dc->Gp->inf(after_e)->tree_occ [i] [k] = NULL;
+}
+}
+// --- update edge_occs --- //
+ea1->edge_occ [rnb_right] = ea2->edge_occ [rnb_right];
+if(eb1) eb1->edge_occ [rnb_left] = NULL;
+else
+eb2->edge_occ [rnb_left] = NULL;
+eb2->edge_occ [rnb_right] = NULL;
+
+delete ea2;
+}
+
