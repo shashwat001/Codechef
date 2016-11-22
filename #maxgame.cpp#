@@ -1,0 +1,19 @@
+pair<int, pair<int, int> > extendedEuclid(int a, int b) {
+04
+    if(a == 0) return make_pair(b, make_pair(0, 1));
+05
+    pair<int, pair<int, int> > p;
+06
+    p = extendedEuclid(b % a, a);
+07
+    return make_pair(p.first, make_pair(p.second.second - p.second.first*(b/a), p.second.first));
+08
+}
+09
+ 
+10
+int modInverse(int a, int m) {
+11
+    return (extendedEuclid(a,m).second.first + m) % m;
+12
+}

@@ -1,0 +1,7 @@
+BufferedReader fin = new BufferedReader (new InputStreamReader ( System . in ) ) ;
+StringTokenizer toker ;
+String line ;
+while ( ( line = fin . readLine ( ) . trim ( ) ) != null ) 
+	toker = new StringTokenizer ( line ) ;
+	int m = Integer . parseInt ( toker . nextToken ( ) ) ;
+	int n = Integer . parseInt ( toker . NextToken ( ) ) ;

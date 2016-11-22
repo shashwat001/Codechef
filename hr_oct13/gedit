@@ -1,0 +1,5 @@
+
+
+if [[ -n $(diff hackerxout confirmout) ]]; then
+    exit
+fi

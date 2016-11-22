@@ -1,0 +1,31 @@
+BUF	anugcd.cpp	29
+INF	anugcd.cpp	21
+LINF	anugcd.cpp	22
+M	anugcd.cpp	70
+Manugcd.cpp	anugcd.cpp	/^int main ()$/
+coun	anugcd.cpp	68
+cprime	anugcd.cpp	64
+createfactorvector	anugcd.cpp	/^void createfactorvector()$/
+createsegmenttree	anugcd.cpp	/^void createsegmenttree(int i)$/
+cv	anugcd.cpp	62
+getcount	anugcd.cpp	/^int getcount(int value,int x,int y)$/
+ibuf	anugcd.cpp	30
+init	anugcd.cpp	/^void init(int map,int b,int e,int node)$/
+int	anugcd.cpp	27
+ipt	anugcd.cpp	32
+it	anugcd.cpp	65
+itb	anugcd.cpp	66
+ite	anugcd.cpp	66
+itib	anugcd.cpp	65
+itie	anugcd.cpp	65
+lli	anugcd.cpp	26
+maxm	anugcd.cpp	60
+mp	anugcd.cpp	23
+pb	anugcd.cpp	24
+pi	anugcd.cpp	27
+prime	anugcd.cpp	63
+primehash	anugcd.cpp	67
+ptable	anugcd.cpp	69
+query	anugcd.cpp	/^int query(int map,int b,int e,int i,int j,int node/
+readInt	anugcd.cpp	/^int readInt() $/
+v	anugcd.cpp	61
