@@ -2,3 +2,6 @@ a.out
 generator
 */a.out
 *~
+*.s
+*.o
+*.class
