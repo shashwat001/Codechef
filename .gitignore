@@ -6,3 +6,5 @@ generator
 *.o
 *.class
 *.dSYM
+input
+output
